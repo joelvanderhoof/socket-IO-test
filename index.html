@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <h1>Socket IO Example</h1>
+
+    <div>
+        Username: <input id="user" type="text" name="username"><br>
+        <button id="user-submit">
+            Update
+        </button>
+    </div>
+
+    <div>Chat Messages</div>
+    <div id="chat-messages">
+
+    </div>
+
+
+    <div>
+        New Message: <input id="message" type="text" name="message"><br>
+        <!-- <button id="message-submit" type="submit" value="Submit"> -->
+        <button id="message-submit">
+            Send
+        </button>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script>
+
+        const socket = io.connect('http://localhost:4444');
+        const userButton = document.getElementById('user-submit');
+        const messageButton = document.getElementById('message-submit');
+
+        userButton.addEventListener('click', () => {
+            const userInput = document.getElementById('user');
+            const action =
+                socket.emit('CHANGE_USER_NAME', {
+                    username: userInput.value
+                })
+        })
+
+        messageButton.addEventListener('click', () => {
+            const messageInput = document.getElementById('message');
+            socket.emit('SEND_MESSAGE', {
+                message: messageInput.value
+            });
+        })
+
+        socket.on('SEND_MESSAGE', data => {
+            console.log(data);
+            const { message, username } = data;
+            const newMessage = `${username}: ${message}`;
+            const node = document.createElement('LI');
+            const textnode = document.createTextNode(newMessage);
+            node.appendChild(textnode);
+            document.getElementById('chat-messages').appendChild(node);
+
+        })
+
+    </script>
+</body>
+
+</html>
